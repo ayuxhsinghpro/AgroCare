@@ -1,50 +1,1026 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AgroCare | AI Crop Diagnosis</title>
 
-    <title>AgroCare | Crop Diagnosis</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
-    <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      background: #f4f8f3;
+      color: #1f2933;
+      min-height: 100vh;
+    }
 
-        body {
-            font-family: Arial, sans-serif;
-            background: #f4f8f2;
-            color: #1d2b1f;
-        }
+    header {
+      background: white;
+      border-bottom: 1px solid #dfe8df;
+      padding: 18px 7%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
 
-        header {
-            background: white;
-            padding: 20px 8%;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid #ddd;
-        }
+    .logo {
+      font-size: 25px;
+      font-weight: 700;
+      color: #237a3b;
+      text-decoration: none;
+    }
 
-        .logo {
-            font-size: 25px;
-            font-weight: bold;
-            color: #237a3b;
-        }
+    nav a {
+      text-decoration: none;
+      color: #333;
+      margin-left: 25px;
+      font-weight: 600;
+    }
 
-        nav a {
-            text-decoration: none;
-            color: #333;
-            margin-left: 25px;
-            font-weight: 600;
-        }
+    nav a:hover,
+    nav a.active {
+      color: #237a3b;
+    }
 
-        nav a:hover {
-            color: #237a3b;
-        }
+    .container {
+      width: 92%;
+      max-width: 1050px;
+      margin: 45px auto;
+    }
 
-        .container {
-            max-width: 850px;
-            margin:
+    .hero {
+      text-align: center;
+      margin-bottom: 35px;
+    }
+
+    .hero h1 {
+      color: #176b32;
+      font-size: 38px;
+      margin-bottom: 10px;
+    }
+
+    .hero p {
+      color: #66736a;
+      font-size: 17px;
+    }
+
+    .diagnosis-card {
+      background: white;
+      border-radius: 18px;
+      padding: 30px;
+      box-shadow: 0 8px 30px rgba(28, 72, 38, 0.09);
+      border: 1px solid #e1ebe2;
+    }
+
+    .upload-area {
+      border: 2px dashed #69a978;
+      border-radius: 16px;
+      padding: 45px 20px;
+      text-align: center;
+      background: #f7fbf7;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .upload-area:hover {
+      background: #eef8ef;
+      border-color: #237a3b;
+    }
+
+    .upload-icon {
+      font-size: 48px;
+      margin-bottom: 12px;
+    }
+
+    .upload-area h2 {
+      color: #237a3b;
+      margin-bottom: 8px;
+    }
+
+    .upload-area p {
+      color: #6b756e;
+      margin-bottom: 18px;
+    }
+
+    input[type="file"] {
+      display: none;
+    }
+
+    .btn {
+      border: none;
+      border-radius: 9px;
+      padding: 12px 22px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .btn-primary {
+      background: #237a3b;
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: #195e2c;
+      transform: translateY(-1px);
+    }
+
+    .btn-secondary {
+      background: #e8f2e9;
+      color: #237a3b;
+    }
+
+    .btn-secondary:hover {
+      background: #d8eadb;
+    }
+
+    .btn-danger {
+      background: #f7e7e7;
+      color: #a33a3a;
+    }
+
+    .preview-section {
+      display: none;
+      margin-top: 30px;
+    }
+
+    .preview-section.show {
+      display: block;
+    }
+
+    .preview-title {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+
+    .preview-title h2 {
+      color: #237a3b;
+      font-size: 22px;
+    }
+
+    .image-box {
+      width: 100%;
+      min-height: 300px;
+      background: #111;
+      border-radius: 14px;
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    #imagePreview {
+      max-width: 100%;
+      max-height: 500px;
+      display: none;
+      object-fit: contain;
+    }
+
+    .controls {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 18px;
+    }
+
+    .analyze-btn {
+      width: 100%;
+      margin-top: 20px;
+      padding: 15px;
+      font-size: 17px;
+    }
+
+    .crop-editor {
+      display: none;
+      margin-top: 25px;
+      padding: 20px;
+      background: #f5f9f5;
+      border-radius: 14px;
+      border: 1px solid #dbe8dc;
+    }
+
+    .crop-editor.show {
+      display: block;
+    }
+
+    .crop-editor h3 {
+      color: #237a3b;
+      margin-bottom: 15px;
+    }
+
+    #cropCanvas {
+      width: 100%;
+      max-height: 500px;
+      background: #111;
+      border-radius: 10px;
+      touch-action: none;
+      cursor: crosshair;
+    }
+
+    .crop-help {
+      margin-top: 10px;
+      color: #69756d;
+      font-size: 14px;
+    }
+
+    .result {
+      display: none;
+      margin-top: 30px;
+      border-radius: 14px;
+      padding: 25px;
+      background: #eef8ef;
+      border-left: 5px solid #237a3b;
+    }
+
+    .result.show {
+      display: block;
+    }
+
+    .result h2 {
+      color: #176b32;
+      margin-bottom: 12px;
+    }
+
+    .result-item {
+      background: white;
+      padding: 14px;
+      border-radius: 9px;
+      margin-top: 10px;
+    }
+
+    .result-item strong {
+      color: #237a3b;
+    }
+
+    .status {
+      text-align: center;
+      margin-top: 15px;
+      color: #66736a;
+      min-height: 20px;
+    }
+
+    .loading {
+      display: none;
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    .loading.show {
+      display: block;
+    }
+
+    .spinner {
+      width: 35px;
+      height: 35px;
+      border: 4px solid #d7e7d9;
+      border-top-color: #237a3b;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin: auto;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    footer {
+      text-align: center;
+      color: #718078;
+      padding: 30px;
+      margin-top: 40px;
+    }
+
+    @media (max-width: 700px) {
+      header {
+        flex-direction: column;
+        gap: 15px;
+      }
+
+      nav a {
+        margin: 0 7px;
+        font-size: 14px;
+      }
+
+      .hero h1 {
+        font-size: 30px;
+      }
+
+      .diagnosis-card {
+        padding: 18px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <header>
+    <a href="index.html" class="logo">🌱 AgroCare</a>
+
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="diagnosis.html" class="active">Diagnosis</a>
+      <a href="index.html#weather">Weather</a>
+      <a href="index.html#marketplace">Marketplace</a>
+    </nav>
+  </header>
+
+  <main class="container">
+
+    <section class="hero">
+      <h1>🌿 AI Crop Diagnosis</h1>
+      <p>
+        Upload a crop image and analyze possible diseases, pests and crop problems.
+      </p>
+    </section>
+
+    <section class="diagnosis-card">
+
+      <!-- UPLOAD -->
+      <label class="upload-area" for="cropImage">
+        <div class="upload-icon">📷</div>
+
+        <h2>Upload Crop Image</h2>
+
+        <p>
+          Choose a clear photo of the affected leaf, stem or crop.
+        </p>
+
+        <span class="btn btn-primary">
+          Choose Image
+        </span>
+      </label>
+
+      <input
+        type="file"
+        id="cropImage"
+        accept="image/*"
+      />
+
+      <div id="status" class="status"></div>
+
+      <!-- IMAGE PREVIEW -->
+      <section id="previewSection" class="preview-section">
+
+        <div class="preview-title">
+          <h2>Image Preview</h2>
+
+          <button
+            type="button"
+            class="btn btn-danger"
+            id="removeBtn"
+          >
+            Remove
+          </button>
+        </div>
+
+        <div class="image-box">
+          <img
+            id="imagePreview"
+            alt="Selected crop image"
+          />
+        </div>
+
+        <div class="controls">
+
+          <button
+            type="button"
+            class="btn btn-secondary"
+            id="editBtn"
+          >
+            ✂️ Edit / Crop
+          </button>
+
+          <button
+            type="button"
+            class="btn btn-secondary"
+            id="resetBtn"
+          >
+            ↩ Reset
+          </button>
+
+        </div>
+
+        <!-- CROP EDITOR -->
+        <div id="cropEditor" class="crop-editor">
+
+          <h3>✂️ Edit Crop Image</h3>
+
+          <canvas id="cropCanvas"></canvas>
+
+          <p class="crop-help">
+            Drag on the image to select the area you want to analyze.
+          </p>
+
+          <div class="controls">
+
+            <button
+              type="button"
+              class="btn btn-primary"
+              id="applyCropBtn"
+            >
+              Apply Crop
+            </button>
+
+            <button
+              type="button"
+              class="btn btn-secondary"
+              id="cancelCropBtn"
+            >
+              Cancel
+            </button>
+
+          </div>
+
+        </div>
+
+        <button
+          type="button"
+          class="btn btn-primary analyze-btn"
+          id="analyzeBtn"
+        >
+          🔍 Analyze Crop
+        </button>
+
+      </section>
+
+      <!-- LOADING -->
+      <div id="loading" class="loading">
+
+        <div class="spinner"></div>
+
+        <p style="margin-top:10px;">
+          Analyzing your crop image...
+        </p>
+
+      </div>
+
+      <!-- RESULT -->
+      <section id="result" class="result">
+
+        <h2>🌱 Diagnosis Result</h2>
+
+        <div class="result-item">
+          <strong>Possible Problem:</strong>
+          <span id="problemResult">
+            Leaf disease or nutrient stress
+          </span>
+        </div>
+
+        <div class="result-item">
+          <strong>Confidence:</strong>
+          <span id="confidenceResult">
+            Preliminary analysis
+          </span>
+        </div>
+
+        <div class="result-item">
+          <strong>Recommended Action:</strong>
+          <span id="actionResult">
+            Inspect the affected area carefully, remove severely damaged
+            leaves if appropriate, and consult a local agriculture expert
+            before applying treatment.
+          </span>
+        </div>
+
+        <div class="result-item">
+          <strong>Note:</strong>
+          This browser-based demo provides preliminary guidance only.
+          A proper AI model/API can be connected later for real disease
+          detection.
+        </div>
+
+      </section>
+
+    </section>
+
+  </main>
+
+  <footer>
+    ©️ 2026 AgroCare · Smart Agriculture Platform
+  </footer>
+
+
+  <script>
+
+    /* ================================
+       ELEMENTS
+    ================================= */
+
+    const cropImage = document.getElementById("cropImage");
+    const previewSection = document.getElementById("previewSection");
+    const imagePreview = document.getElementById("imagePreview");
+
+    const editBtn = document.getElementById("editBtn");
+    const resetBtn = document.getElementById("resetBtn");
+    const removeBtn = document.getElementById("removeBtn");
+
+    const cropEditor = document.getElementById("cropEditor");
+    const cropCanvas = document.getElementById("cropCanvas");
+
+    const applyCropBtn = document.getElementById("applyCropBtn");
+    const cancelCropBtn = document.getElementById("cancelCropBtn");
+
+    const analyzeBtn = document.getElementById("analyzeBtn");
+
+    const loading = document.getElementById("loading");
+    const result = document.getElementById("result");
+
+    const status = document.getElementById("status");
+
+    const ctx = cropCanvas.getContext("2d");
+
+
+    /* ================================
+       VARIABLES
+    ================================= */
+
+    let originalImage = null;
+    let currentImageURL = null;
+
+    let isDrawing = false;
+
+    let startX = 0;
+    let startY = 0;
+
+    let endX = 0;
+    let endY = 0;
+
+
+    /* ================================
+       IMAGE UPLOAD
+    ================================= */
+
+    cropImage.addEventListener("change", function () {
+
+      const file = this.files[0];
+
+      if (!file) {
+        return;
+      }
+
+      if (!file.type.startsWith("image/")) {
+
+        alert("Please select a valid image.");
+
+        cropImage.value = "";
+
+        return;
+      }
+
+      const reader = new FileReader();
+
+      reader.onload = function (event) {
+
+        currentImageURL = event.target.result;
+
+        imagePreview.src = currentImageURL;
+
+        imagePreview.style.display = "block";
+
+        previewSection.classList.add("show");
+
+        result.classList.remove("show");
+
+        status.textContent =
+          "Image uploaded successfully. You can edit it before analysis.";
+
+        originalImage = new Image();
+
+        originalImage.onload = function () {
+
+          drawCropCanvas();
+
+        };
+
+        originalImage.src = currentImageURL;
+
+      };
+
+      reader.readAsDataURL(file);
+
+    });
+
+
+    /* ================================
+       EDIT / CROP
+    ================================= */
+
+    editBtn.addEventListener("click", function () {
+
+      if (!originalImage) {
+        alert("Please upload an image first.");
+        return;
+      }
+
+      cropEditor.classList.add("show");
+
+      drawCropCanvas();
+
+      cropEditor.scrollIntoView({
+        behavior: "smooth",
+        block: "center"
+      });
+
+    });
+
+
+    /* ================================
+       DRAW CANVAS
+    ================================= */
+
+    function drawCropCanvas() {
+
+      if (!originalImage) {
+        return;
+      }
+
+      const maxWidth = 850;
+
+      let width = originalImage.width;
+      let height = originalImage.height;
+
+      if (width > maxWidth) {
+
+        const scale = maxWidth / width;
+
+        width = maxWidth;
+        height = height * scale;
+
+      }
+
+      cropCanvas.width = width;
+      cropCanvas.height = height;
+
+      ctx.clearRect(
+        0,
+        0,
+        cropCanvas.width,
+        cropCanvas.height
+      );
+
+      ctx.drawImage(
+        originalImage,
+        0,
+        0,
+        width,
+        height
+      );
+
+    }
+
+
+    /* ================================
+       CROP MOUSE EVENTS
+    ================================= */
+
+    cropCanvas.addEventListener("pointerdown", function (event) {
+
+      const rect = cropCanvas.getBoundingClientRect();
+
+      startX =
+        (event.clientX - rect.left) *
+        (cropCanvas.width / rect.width);
+
+      startY =
+        (event.clientY - rect.top) *
+        (cropCanvas.height / rect.height);
+
+      endX = startX;
+      endY = startY;
+
+      isDrawing = true;
+
+      cropCanvas.setPointerCapture(event.pointerId);
+
+    });
+
+
+    cropCanvas.addEventListener("pointermove", function (event) {
+
+      if (!isDrawing) {
+        return;
+      }
+
+      const rect = cropCanvas.getBoundingClientRect();
+
+      endX =
+        (event.clientX - rect.left) *
+        (cropCanvas.width / rect.width);
+
+      endY =
+        (event.clientY - rect.top) *
+        (cropCanvas.height / rect.height);
+
+      drawCropCanvas();
+
+      drawSelection();
+
+    });
+
+
+    cropCanvas.addEventListener("pointerup", function () {
+
+      isDrawing = false;
+
+    });
+
+
+    cropCanvas.addEventListener("pointercancel", function () {
+
+      isDrawing = false;
+
+    });
+
+
+    /* ================================
+       DRAW SELECTION
+    ================================= */
+
+    function drawSelection() {
+
+      const x = Math.min(startX, endX);
+      const y = Math.min(startY, endY);
+
+      const width = Math.abs(endX - startX);
+      const height = Math.abs(endY - startY);
+
+      if (width < 2 || height < 2) {
+        return;
+      }
+
+      ctx.save();
+
+      ctx.fillStyle = "rgba(0, 0, 0, 0.45)";
+
+      ctx.fillRect(
+        0,
+        0,
+        cropCanvas.width,
+        cropCanvas.height
+      );
+
+      ctx.clearRect(
+        x,
+        y,
+        width,
+        height
+      );
+
+      ctx.drawImage(
+        originalImage,
+        x,
+        y,
+        width,
+        height,
+        x,
+        y,
+        width,
+        height
+      );
+
+      ctx.strokeStyle = "#ffffff";
+      ctx.lineWidth = 3;
+
+      ctx.strokeRect(
+        x,
+        y,
+        width,
+        height
+      );
+
+      ctx.restore();
+
+    }
+
+
+    /* ================================
+       APPLY CROP
+    ================================= */
+
+    applyCropBtn.addEventListener("click", function () {
+
+      const x = Math.min(startX, endX);
+      const y = Math.min(startY, endY);
+
+      const width = Math.abs(endX - startX);
+      const height = Math.abs(endY - startY);
+
+      if (width < 10 || height < 10) {
+
+        alert("Please drag over the image to select a crop area.");
+
+        return;
+      }
+
+      const croppedCanvas =
+        document.createElement("canvas");
+
+      croppedCanvas.width = width;
+      croppedCanvas.height = height;
+
+      const croppedCtx =
+        croppedCanvas.getContext("2d");
+
+      croppedCtx.drawImage(
+        originalImage,
+        x,
+        y,
+        width,
+        height,
+        0,
+        0,
+        width,
+        height
+      );
+
+      currentImageURL =
+        croppedCanvas.toDataURL("image/jpeg", 0.92);
+
+      imagePreview.src = currentImageURL;
+
+      originalImage = new Image();
+
+      originalImage.onload = function () {
+
+        drawCropCanvas();
+
+      };
+
+      originalImage.src = currentImageURL;
+
+      cropEditor.classList.remove("show");
+
+      status.textContent =
+        "Crop applied successfully.";
+
+    });
+
+
+    /* ================================
+       CANCEL CROP
+    ================================= */
+
+    cancelCropBtn.addEventListener("click", function () {
+
+      cropEditor.classList.remove("show");
+
+      drawCropCanvas();
+
+    });
+
+
+    /* ================================
+       RESET IMAGE
+    ================================= */
+
+    resetBtn.addEventListener("click", function () {
+
+      if (!originalImage) {
+        return;
+      }
+
+      currentImageURL = cropImage.files[0]
+        ? URL.createObjectURL(cropImage.files[0])
+        : currentImageURL;
+
+      const reader = new FileReader();
+
+      if (cropImage.files[0]) {
+
+        reader.onload = function (event) {
+
+          currentImageURL = event.target.result;
+
+          imagePreview.src = currentImageURL;
+
+          originalImage = new Image();
+
+          originalImage.onload = function () {
+            drawCropCanvas();
+          };
+
+          originalImage.src = currentImageURL;
+
+        };
+
+        reader.readAsDataURL(cropImage.files[0]);
+
+      }
+
+      cropEditor.classList.remove("show");
+
+      result.classList.remove("show");
+
+      status.textContent =
+        "Image reset to the original.";
+
+    });
+
+
+    /* ================================
+       REMOVE IMAGE
+    ================================= */
+
+    removeBtn.addEventListener("click", function () {
+
+      cropImage.value = "";
+
+      imagePreview.src = "";
+
+      imagePreview.style.display = "none";
+
+      previewSection.classList.remove("show");
+
+      cropEditor.classList.remove("show");
+
+      result.classList.remove("show");
+
+      loading.classList.remove("show");
+
+      originalImage = null;
+
+      currentImageURL = null;
+
+      status.textContent = "";
+
+    });
+
+
+    /* ================================
+       ANALYZE
+    ================================= */
+
+    analyzeBtn.addEventListener("click", function () {
+
+      if (!currentImageURL) {
+
+        alert("Please upload a crop image first.");
+
+        return;
+      }
+
+      result.classList.remove("show");
+
+      loading.classList.add("show");
+
+      analyzeBtn.disabled = true;
+
+      analyzeBtn.textContent =
+        "Analyzing...";
+
+
+      /*
+        Demo analysis.
+
+        Replace this section later with your
+        real AI/API request.
+      */
+
+      setTimeout(function () {
+
+        loading.classList.remove("show");
+
+        analyzeBtn.disabled = false;
+
+        analyzeBtn.textContent =
+          "🔍 Analyze Crop";
+
+        document.getElementById("problemResult").textContent =
+          "Possible leaf disease / nutrient stress";
+
+        document.getElementById("confidenceResult").textContent =
+          "Preliminary — AI model not connected yet";
+
+        document.getElementById("actionResult").textContent =
+          "Check the crop for spots, discoloration, insects or fungal growth. " +
+          "Avoid applying chemicals until the problem has been correctly identified.";
+
+        result.classList.add("show");
+
+        result.scrollIntoView({
+          behavior: "smooth",
+          block: "center"
+        });
+
+      }, 1800);
+
+    });
+
+  </script>
+
+</body>
+</html>
