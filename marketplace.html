@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AgroCare – Crop Diagnosis</title>
+    <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+    <!-- Navigation (same as index.html) -->
+    <nav class="navbar">
+        <div class="logo">🌱 AgroCare</div>
+        <ul class="nav-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="diagnosis.html" class="active">Diagnosis</a></li>
+            <li><a href="marketplace.html">Marketplace</a></li>
+            <li><a href="index.html#about">About</a></li>
+        </ul>
+    </nav>
+
+    <!-- Diagnosis Section -->
+    <section class="diagnosis-section">
+        <h1>🔬 Crop Disease Diagnosis</h1>
+        <p>Upload a clear photo of the affected crop leaf or fruit.</p>
+
+        <div class="upload-area" id="uploadArea">
+            <p>📤 Drag & drop your image here</p>
+            <p>or</p>
+            <input type="file" id="imageInput" accept="image/*" />
+            <label for="imageInput" class="btn primary">Choose File</label>
+        </div>
+
+        <div id="previewContainer">
+            <img id="previewImage" style="display:none; max-width:300px; margin-top:20px;" />
+        </div>
+
+        <button id="diagnoseBtn" class="btn primary" disabled>🔍 Diagnose</button>
+
+        <!-- Results -->
+        <div id="resultContainer" style="display:none;">
+            <h2>Diagnosis Result</h2>
+            <p><strong>Disease:</strong> <span id="diseaseName">—</span></p>
+            <p><strong>Confidence:</strong> <span id="confidence">—</span>%</p>
+            <p><strong>Treatment:</strong> <span id="treatment">—</span></p>
+        </div>
+    </section>
+
+    <footer>
+        <p>©️ 2026 AgroCare. Made with ❤️ by Ayush Singh</p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
